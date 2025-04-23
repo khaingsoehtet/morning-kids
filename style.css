@@ -1,0 +1,176 @@
+/* style.css */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background-color: #fef9f4;
+    color: #333;
+  }
+  
+  /* Header Styling */
+  header {
+    background-color: #ffe5b4; /* Match the menu's light background */
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px solid #ddd; /* Add a subtle border for consistency */
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #333; /* Match the menu text color */
+  }
+
+  header .tagline {
+    font-size: 1.2rem;
+    color: #aa5500; /* A complementary color for the tagline */
+  }
+  
+  nav {
+    background-color: #ffcc80;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav li {
+    display: inline-block;
+    margin: 0 15px;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: #444;
+    font-weight: bold;
+  }
+  
+  .hero {
+    text-align: center;
+    padding: 40px 20px;
+    background: #fff3e0;
+  }
+  
+  .menu {
+    padding: 40px 20px;
+    background: #fff8e1;
+  }
+  
+  .menu h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .menu-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+    gap: 20px; /* Space between menu items */
+    margin-top: 20px;
+  }
+  
+  /* Menu Item Styling */
+  .menu-item {
+    display: flex;
+    flex-direction: column; /* Stack image and text vertically */
+    align-items: center; /* Center-align content */
+    text-align: center; /* Center-align text */
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Ensure content stays within the frame */
+    height: 100%; /* Ensure consistent height for all items */
+    position: relative; /* Allow positioning of child elements */
+  }
+  
+  .menu-item img {
+    width: 100%; /* Make the image responsive */
+    max-width: 200px; /* Set a maximum width for the image */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px; /* Optional: Rounded corners */
+    margin-bottom: 15px; /* Add space below the image */
+  }
+
+  .menu-item .details {
+    width: 100%; /* Make the details section take full width */
+    padding: 15px; /* Add padding inside the section */
+    margin-top: auto; /* Push the details section to the bottom */
+    text-align: center; /* Center-align the text */
+  }
+  
+  .menu-item h3 {
+    margin: 10px 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .menu-item p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  /* Contact Section Styling */
+  .contact {
+    padding: 40px 20px;
+    background: #fff3e0; /* Match the menu's light background */
+    text-align: center;
+    border: 1px solid #ddd; /* Add a border for consistency */
+    border-radius: 10px; /* Match the menu's rounded corners */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  }
+
+  .contact h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #333; /* Match the menu text color */
+  }
+
+  .contact p {
+    margin: 5px 0;
+    font-size: 1rem;
+    color: #555; /* A lighter text color for details */
+  }
+  
+  footer {
+    background-color: #ffd180; /* Match the menu's color palette */
+    padding: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #333; /* Match the menu text color */
+    border-top: 2px solid #ddd; /* Add a subtle border for consistency */
+  }
+  
+  .dashboard {
+    margin: 2rem;
+    background: #fefefe;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+  .stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    flex: 1;
+    background: #fff8e1;
+    border-left: 6px solid #ffb300;
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+  }
+  .stat-card h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  .stat-card p {
+    font-size: 2rem;
+    margin: 0.5rem 0 0;
+    font-weight: bold;
+  }

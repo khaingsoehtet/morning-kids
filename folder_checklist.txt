@@ -1,0 +1,11 @@
+/morning-kids/
+├── index.html
+├── admin.html
+├── admin.js
+├── upload.php
+├── style.css
+├── data.json
+└── images/
+    ├── banana_puree.jpg
+    ├── veggie_bites.jpg
+    └── oats_porridge.jpg

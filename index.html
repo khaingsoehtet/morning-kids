@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morning Kids - Hygienic Food for Kids</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Morning Kids</h1>
+    <p class="tagline">Nourishing Young Tummies with Love & Care</p>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section id="home" class="hero">
+    <h2>Healthy. Tasty. Safe.</h2>
+    <p>Specially made meals for infants and toddlers</p>
+  </section>
+
+  <section id="menu" class="menu">
+    <h2>Our Menu</h2>
+    <div id="menu-container" class="menu-container"></div>
+  </section>
+
+  <section id="contact" class="contact">
+    <h2>Contact Us</h2>
+    <p>Email: hello@morningkids.local</p>
+    <p>Phone: +123-456-7890</p>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Morning Kids. All rights reserved.</p>
+  </footer>
+
+  <script>
+    fetch('data.json')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch menu items.');
+        return res.json();
+      })
+      .then(data => {
+        const container = document.getElementById('menu-container');
+        container.innerHTML = '';
+        data
+          .filter(item => item.available !== false)
+          .forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'menu-item';
+            card.innerHTML = `
+              <img src="images/${item.image}" alt="${item.name}" />
+              <div class="details">
+                <h3>${item.name}</h3>
+                <p><strong>Age Group:</strong> ${item.age}</p>
+                <p>${item.description}</p>
+                <p><strong>Ingredients:</strong> ${item.ingredients}</p>
+                <p><strong>Price:</strong> $${item.price}</p>
+              </div>
+            `;
+            container.appendChild(card);
+          });
+      })
+      .catch(err => {
+        console.error(err);
+        const container = document.getElementById('menu-container');
+        container.innerHTML = '<p>Failed to load menu items. Please try again later.</p>';
+      });
+  </script>
+</body>
+</html>
