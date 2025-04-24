@@ -177,6 +177,21 @@
 
   <h1>Admin Portal</h1>
 
+  <!-- Move logout button to the top right corner -->
+  <div id="logout-section" style="position:fixed;top:24px;right:32px;z-index:1000;display:none;">
+    <button id="logout-btn" style="padding:8px 20px;background:#e74c3c;">Logout</button>
+  </div>
+
+  <div id="login-section" style="max-width:400px;margin:40px auto;display:none;">
+    <h2>Admin Login</h2>
+    <form autocomplete="off" onsubmit="return false;">
+      <input type="text" id="login-username" placeholder="Username" style="width:100%;margin-bottom:10px;" autocomplete="off">
+      <input type="password" id="login-password" placeholder="Password" style="width:100%;margin-bottom:10px;" autocomplete="off">
+      <button id="login-btn" style="width:100%;">Login</button>
+      <div id="login-error" style="color:red;margin-top:10px;"></div>
+    </form>
+  </div>
+
   <!-- Dashboard Section -->
   <section class="dashboard">
     <h2>📊 Dashboard Overview</h2>
@@ -217,6 +232,77 @@
   <h2 style="text-align:center; margin-top:40px;">Manage Existing Items</h2>
   <div id="item-list" class="item-list"></div>
 
+  <script>
+function showAdminUI(loggedIn) {
+  document.getElementById('login-section').style.display = loggedIn ? 'none' : 'block';
+  document.getElementById('logout-section').style.display = loggedIn ? 'block' : 'none';
+  document.querySelector('.dashboard').style.display = loggedIn ? 'block' : 'none';
+  document.getElementById('menu-form').style.display = loggedIn ? 'block' : 'none';
+  document.getElementById('item-list').style.display = loggedIn ? 'block' : 'none';
+  document.getElementById('toast').style.display = loggedIn ? 'block' : 'none';
+  document.querySelector('h2[style*="text-align:center"]').style.display = loggedIn ? 'block' : 'none';
+}
+
+function checkAuth() {
+  // Try to fetch a protected endpoint
+  return fetch('get_all.php').then(res => {
+    if (res.status === 401) throw new Error('Unauthorized');
+    return res.json();
+  });
+}
+
+function doLogin() {
+  const username = document.getElementById('login-username').value;
+  const password = document.getElementById('login-password').value;
+  fetch('login.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({username, password})
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      showAdminUI(true);
+      location.reload();
+    } else {
+      document.getElementById('login-error').textContent = data.error || 'Login failed';
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  showAdminUI(false);
+  checkAuth().then(() => showAdminUI(true)).catch(() => showAdminUI(false));
+
+  document.getElementById('login-btn').onclick = doLogin;
+
+  // Enable login on Enter key for username and password fields
+  document.getElementById('login-username').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      doLogin();
+    }
+  });
+  document.getElementById('login-password').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      doLogin();
+    }
+  });
+
+  // Logout button logic
+  document.getElementById('logout-btn').onclick = function() {
+    fetch('logout.php')
+      .then(() => {
+        // Clear login fields
+        document.getElementById('login-username').value = '';
+        document.getElementById('login-password').value = '';
+        showAdminUI(false);
+        location.reload();
+      });
+  };
+});
+</script>
   <script src="admin.js"></script>
 </body>
 </html>

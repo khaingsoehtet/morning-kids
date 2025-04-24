@@ -1,4 +1,5 @@
 <?php
+require 'auth.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
         echo "No image uploaded or upload error.";
