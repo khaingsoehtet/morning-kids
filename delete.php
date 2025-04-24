@@ -1,12 +1,16 @@
 <?php
+require 'db.php';
+
 $data = json_decode(file_get_contents('php://input'), true);
-$index = $data['index'];
+$id = $data['id'] ?? null;
 
-$file = 'data.json';
-$items = json_decode(file_get_contents($file), true);
+if (!$id) {
+    echo json_encode(['success' => false, 'error' => 'No ID provided']);
+    exit;
+}
 
-// Just mark unavailable instead of removing
-$items[$index]['available'] = false;
+$stmt = $pdo->prepare("DELETE FROM menu_items WHERE id=?");
+$stmt->execute([$id]);
 
-file_put_contents($file, json_encode($items, JSON_PRETTY_PRINT));
-echo "Deleted";
+echo json_encode(['success' => true]);
+?>

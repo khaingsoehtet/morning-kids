@@ -22,18 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadItems() {
-        fetch('data.json')
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to fetch data.');
-                return res.json();
-            })
+        fetch('get_all.php')
+            .then(res => res.json())
             .then(data => {
                 itemList.innerHTML = '';
                 let available = 0;
                 let unavailable = 0;
 
-                data.forEach((item, index) => {
-                    if (item.available) available++;
+                data.forEach((item) => {
+                    if (item.available == 1 || item.available === true) available++;
                     else unavailable++;
 
                     const card = document.createElement('div');
@@ -41,14 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     card.innerHTML = `
                         <img src="images/${item.image}" style="width:100%; height:auto; border-radius:8px;" />
                         <h3>${item.name}</h3>
-                        <p><strong>Age Group:</strong> ${item.age}</p>
+                        <p><strong>Age Group:</strong> ${item.age_group}</p>
                         <p>${item.description}</p>
                         <p><strong>Ingredients:</strong> ${item.ingredients}</p>
                         <p><strong>Price:</strong> $${item.price}</p>
-                        <p><strong>Status:</strong> ${item.available ? 'Available' : 'Unavailable'}</p>
-                        <div style="display:flex;">
-                            <button class="edit" onclick="editItem(${index})">Edit</button>
-                            <button onclick="deleteItem(${index})">Delete</button>
+                        <p><strong>Status:</strong> ${item.available == 1 ? 'Available' : 'Unavailable'}</p>
+                        <div class="button-group">
+                            <button class="edit" onclick="editItem(${item.id})">Edit</button>
+                            <button class="delete" onclick="deleteItem(${item.id})">Delete</button>
+                            <button class="toggle" onclick="toggleAvailability(${item.id})">Toggle Availability</button>
                         </div>
                     `;
                     itemList.appendChild(card);
@@ -68,68 +66,62 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         const name = document.getElementById('name').value.trim();
-        const age = document.getElementById('age').value.trim();
+        const age_group = document.getElementById('age_group').value.trim();
         const description = document.getElementById('description').value.trim();
         const ingredients = document.getElementById('ingredients').value.trim();
         const price = parseFloat(document.getElementById('price').value);
         const imageFile = document.getElementById('image').files[0];
-        const available = document.getElementById('availability').checked;
+        const available = document.getElementById('availability').checked ? 1 : 0;
+        const editId = form.dataset.editId;
 
-        if (!name || !age || !description || !ingredients || isNaN(price)) {
+        if (!name || !age_group || !description || !ingredients || isNaN(price)) {
             showToast("Please fill all fields correctly.");
             return;
         }
 
-        const formData = new FormData();
-        if (imageFile) {
-            formData.append('image', imageFile);
-        }
+        const uploadImage = imageFile
+            ? (() => {
+                const formData = new FormData();
+                formData.append('image', imageFile);
+                return fetch('upload.php', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(res => res.text())
+                .then(text => {
+                    if (!text.includes('successfully')) throw new Error('Failed to upload image.');
+                    return imageFile.name;
+                });
+            })()
+            : Promise.resolve(form.dataset.existingImage || '');
 
-        // Use the existing image if no new one is selected
-        const uploadPromise = imageFile
-            ? fetch('upload.php', {
-                  method: 'POST',
-                  body: formData,
-              }).then((res) => {
-                  if (!res.ok) throw new Error('Failed to upload image.');
-                  return imageFile.name;
-              })
-            : Promise.resolve(form.dataset.existingImage); // Use the existing image
-
-        uploadPromise
+        uploadImage
             .then((imageName) => {
-                return fetch('data.json')
-                    .then((res) => res.json())
-                    .then((data) => {
-                        const editIndex = form.dataset.editIndex;
+                const itemData = {
+                    name,
+                    age_group,
+                    description,
+                    ingredients,
+                    price,
+                    image: imageName,
+                    available,
+                };
+                if (editId) itemData.id = editId;
 
-                        const newItem = {
-                            name,
-                            age,
-                            description,
-                            ingredients,
-                            price,
-                            image: imageName, // Use the uploaded or existing image
-                            available,
-                        };
-
-                        if (editIndex !== undefined) {
-                            // Update the existing item
-                            data[editIndex] = newItem;
-                        } else {
-                            // Add a new item
-                            data.push(newItem);
-                        }
-
-                        return saveData(data);
-                    });
+                return fetch('save_item.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(itemData)
+                });
             })
-            .then(() => {
+            .then(res => res.json())
+            .then(result => {
+                if (!result.success) throw new Error(result.error || 'Failed to save item.');
                 showToast("Item saved successfully!");
                 form.reset();
                 preview.style.display = 'none';
-                delete form.dataset.editIndex; // Clear the edit index
-                delete form.dataset.existingImage; // Clear the existing image
+                delete form.dataset.editId;
+                delete form.dataset.existingImage;
                 loadItems();
             })
             .catch((err) => {
@@ -138,51 +130,64 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     });
 
-    function saveData(data) {
-        return fetch('save_data.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-    }
-
-    window.editItem = function (index) {
-        fetch('data.json')
+    window.editItem = function (id) {
+        fetch('get_item.php?id=' + id)
             .then(res => res.json())
-            .then(data => {
-                const item = data[index];
-
-                // Populate the form with the item's data
+            .then(item => {
                 document.getElementById('name').value = item.name;
-                document.getElementById('age').value = item.age;
+                document.getElementById('age_group').value = item.age_group;
                 document.getElementById('description').value = item.description;
                 document.getElementById('ingredients').value = item.ingredients;
                 document.getElementById('price').value = item.price;
-                document.getElementById('availability').checked = item.available;
+                document.getElementById('availability').checked = item.available == 1;
 
-                // Show the existing image in the preview
-                preview.src = 'images/' + item.image;
-                preview.style.display = 'block';
+                if (item.image && item.image.trim() !== "") {
+                    preview.src = 'images/' + item.image;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
+                }
 
-                // Temporarily store the index and existing image name in the form's dataset
-                form.dataset.editIndex = index;
+                form.dataset.editId = item.id;
                 form.dataset.existingImage = item.image;
             });
     };
 
-    window.deleteItem = function(index) {
-        fetch('data.json')
-            .then(res => res.json())
-            .then(data => {
-                if (!confirm("Are you sure you want to delete this item?")) return;
-                data.splice(index, 1);
-                saveData(data).then(() => {
-                    showToast("Item deleted.");
-                    loadItems();
-                });
-            });
+    window.deleteItem = function(id) {
+        if (!confirm("Are you sure you want to delete this item?")) return;
+        fetch('delete.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (!result.success) throw new Error(result.error || 'Failed to delete item.');
+            showToast("Item deleted.");
+            loadItems();
+        })
+        .catch(err => {
+            console.error(err);
+            showToast("Failed to delete item.");
+        });
+    };
+
+    window.toggleAvailability = function(id) {
+        fetch('toggle_availability.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'id=' + encodeURIComponent(id)
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (!result.success) throw new Error('Failed to toggle availability.');
+            showToast("Availability updated.");
+            loadItems();
+        })
+        .catch(err => {
+            console.error(err);
+            showToast("Failed to update availability.");
+        });
     };
 
     loadItems();

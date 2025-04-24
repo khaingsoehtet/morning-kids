@@ -1,6 +1,13 @@
 # Use the official PHP image with Apache server
 FROM php:8.0-apache
 
+#RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev && \
+ #   docker-php-ext-configure gd --with-freetype --with-jpeg && \
+ #   docker-php-ext-install gd
+
+# Install PDO MySQL driver
+RUN docker-php-ext-install pdo pdo_mysql
+
 # Enable Apache mod_rewrite (needed for clean URLs)
 RUN a2enmod rewrite
 

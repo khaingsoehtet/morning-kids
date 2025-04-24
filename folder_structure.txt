@@ -1,11 +1,21 @@
-/morning-kids/
+/Morning Kid/
+├── admin.html
+├── admin.js
+├── data.json                # (Can be deleted if not used anymore)
+├── db.php
+├── delete.php
+├── docker-compose.yml
+├── Dockerfile
+├── edit.php                 # (Can be deleted if not used anymore)
+├── get_all.php
+├── get_item.php
+├── images/
+│   └── ...                  # All your image files
 ├── index.html
-├── admin.html (coming next)
-├── admin.js (coming next)
-├── upload.php (coming next)
+├── readme.txt               # (Can be deleted, empty)
+├── README.md
+├── save_data.php            # (Can be deleted if not used anymore)
+├── save_item.php
 ├── style.css
-├── data.json
-└── images/
-    ├── banana_puree.jpg
-    ├── veggie_bites.jpg
-    └── oats_porridge.jpg
+├── toggle_availability.php
+├── upload.php

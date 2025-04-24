@@ -41,37 +41,37 @@
   </footer>
 
   <script>
-    fetch('data.json')
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch menu items.');
-        return res.json();
-      })
-      .then(data => {
-        const container = document.getElementById('menu-container');
-        container.innerHTML = '';
-        data
-          .filter(item => item.available !== false)
-          .forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'menu-item';
-            card.innerHTML = `
-              <img src="images/${item.image}" alt="${item.name}" />
-              <div class="details">
-                <h3>${item.name}</h3>
-                <p><strong>Age Group:</strong> ${item.age}</p>
-                <p>${item.description}</p>
-                <p><strong>Ingredients:</strong> ${item.ingredients}</p>
-                <p><strong>Price:</strong> $${item.price}</p>
-              </div>
-            `;
-            container.appendChild(card);
-          });
-      })
-      .catch(err => {
-        console.error(err);
-        const container = document.getElementById('menu-container');
-        container.innerHTML = '<p>Failed to load menu items. Please try again later.</p>';
-      });
-  </script>
+  fetch('get_all.php')
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to fetch menu items.');
+      return res.json();
+    })
+    .then(data => {
+      const container = document.getElementById('menu-container');
+      container.innerHTML = '';
+      data
+        .filter(item => item.available == 1)
+        .forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'menu-item';
+          card.innerHTML = `
+            <img src="images/${item.image}" alt="${item.name}" />
+            <div class="details">
+              <h3>${item.name}</h3>
+              <p><strong>Age Group:</strong> ${item.age}</p>
+              <p>${item.description}</p>
+              <p><strong>Ingredients:</strong> ${item.ingredients}</p>
+              <p><strong>Price:</strong> $${item.price}</p>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+    })
+    .catch(err => {
+      console.error(err);
+      const container = document.getElementById('menu-container');
+      container.innerHTML = '<p>Failed to load menu items. Please try again later.</p>';
+    });
+</script>
 </body>
 </html>

@@ -1,13 +1,20 @@
 <?php
-$index = $_POST['index'];
-$file = 'data.json';
-$items = json_decode(file_get_contents($file), true);
+require 'db.php';
 
-if (isset($items[$index])) {
-  $items[$index]['available'] = !$items[$index]['available'];
-  file_put_contents($file, json_encode($items, JSON_PRETTY_PRINT));
-  echo json_encode(['success' => true, 'available' => $items[$index]['available']]);
-} else {
-  echo json_encode(['success' => false]);
+$id = $_POST['id'] ?? null;
+if (!$id) {
+    echo json_encode(['success' => false, 'error' => 'No ID provided']);
+    exit;
 }
+
+// Toggle availability
+$stmt = $pdo->prepare("UPDATE menu_items SET available = NOT available WHERE id=?");
+$stmt->execute([$id]);
+
+// Get new status
+$stmt = $pdo->prepare("SELECT available FROM menu_items WHERE id=?");
+$stmt->execute([$id]);
+$row = $stmt->fetch();
+
+echo json_encode(['success' => true, 'available' => (bool)$row['available']]);
 ?>
