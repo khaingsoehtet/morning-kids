@@ -5,3 +5,4 @@ images/*
 node_modules/
 vendor/
 .DS_Store
+.env
