@@ -1,7 +1,11 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $image = $_FILES['image']['name'] ?? null;
-    $imageTemp = $_FILES['image']['tmp_name'] ?? null;
+    if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+        echo "No image uploaded or upload error.";
+        exit;
+    }
+    $image = $_FILES['image']['name'];
+    $imageTemp = $_FILES['image']['tmp_name'];
     $targetDir = "images/";
     $targetFile = $targetDir . basename($image);
 
@@ -15,6 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate file size (max 2MB)
     if ($_FILES['image']['size'] > 2 * 1024 * 1024) {
         echo "File size exceeds 2MB limit.";
+        exit;
+    }
+
+    // Prevent overwrite
+    if (file_exists($targetFile)) {
+        echo "File already exists. Please rename your file.";
         exit;
     }
 

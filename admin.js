@@ -74,9 +74,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const available = document.getElementById('availability').checked ? 1 : 0;
         const editId = form.dataset.editId;
 
+        // Basic field validation
         if (!name || !age_group || !description || !ingredients || isNaN(price)) {
             showToast("Please fill all fields correctly.");
             return;
+        }
+        if (price < 0) {
+            showToast("Price must be a positive number.");
+            return;
+        }
+
+        // Image validation (if a new image is selected)
+        if (imageFile) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(imageFile.type)) {
+                showToast("Only JPG, PNG, and GIF images are allowed.");
+                return;
+            }
+            if (imageFile.size > 2 * 1024 * 1024) {
+                showToast("Image size must be less than 2MB.");
+                return;
+            }
         }
 
         const uploadImage = imageFile
