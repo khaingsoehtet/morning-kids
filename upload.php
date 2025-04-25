@@ -23,10 +23,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Prevent overwrite
+    // Prevent overwrite only if file is used by another item
     if (file_exists($targetFile)) {
-        echo "File already exists. Please rename your file.";
-        exit;
+        require 'db.php';
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM menu_items WHERE image=?");
+        $stmt->execute([$image]);
+        $count = $stmt->fetchColumn();
+        if ($count > 0) {
+            echo "File already exists and is in use. Please rename your file.";
+            exit;
+        } else {
+            // Safe to overwrite unused file
+            @unlink($targetFile);
+        }
     }
 
     // Handle upload
