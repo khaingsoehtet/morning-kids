@@ -1,21 +1,35 @@
 /Morning Kid/
 ├── admin.html
 ├── admin.js
-├── data.json                # (Can be deleted if not used anymore)
+├── auth.php
+├── auth_check.php
 ├── db.php
 ├── delete.php
+├── delete_restaurant.php
 ├── docker-compose.yml
 ├── Dockerfile
-├── edit.php                 # (Can be deleted if not used anymore)
+├── edit_order.php
 ├── get_all.php
 ├── get_item.php
+├── get_order.php
+├── get_orders.php
+├── get_order_stats.php
+├── get_order_status.php
+├── get_restaurant.php
+├── get_restaurants.php
 ├── images/
-│   └── ...                  # All your image files
+│   └── ...images...
 ├── index.html
-├── readme.txt               # (Can be deleted, empty)
+├── login.html
+├── login.js
+├── login.php
+├── logout.php
+├── order.html
 ├── README.md
-├── save_data.php            # (Can be deleted if not used anymore)
 ├── save_item.php
+├── save_order.php
+├── save_restaurant.php
 ├── style.css
 ├── toggle_availability.php
 ├── upload.php
+└── .env

@@ -27,6 +27,7 @@
         <li><a href="#" id="nav-dashboard" class="active">Dashboard</a></li>
         <li><a href="#" id="nav-items">Menu Items</a></li>
         <li><a href="#" id="nav-restaurants">Restaurant Locations</a></li>
+        <li><a href="#" id="nav-orders">Orders</a></li>
       </ul>
     </aside>
 
@@ -35,19 +36,53 @@
       <!-- Dashboard Section: ONLY overview/stats -->
       <section class="dashboard card" id="dashboard-section">
         <h2 id="dashboard-heading">📊 Dashboard Overview</h2>
-        <div class="stats">
-          <div class="stat-card">
-            <h3>Total Items</h3>
-            <p id="total-count">0</p>
+        
+        <!-- Menu Item Stats -->
+        <div>
+          <h3 style="margin-bottom:8px;color:#ff7c3f;">Menu Item Stats</h3>
+          <div class="stats" id="item-stats-row">
+            <div class="stat-card">
+              <h3>Total Items</h3>
+              <p id="total-count">0</p>
+            </div>
+            <div class="stat-card">
+              <h3>Available</h3>
+              <p id="available-count">0</p>
+            </div>
+            <div class="stat-card">
+              <h3>Unavailable</h3>
+              <p id="unavailable-count">0</p>
+            </div>
           </div>
-          <div class="stat-card">
-            <h3>Available</h3>
-            <p id="available-count">0</p>
+        </div>
+
+        <!-- Order Stats -->
+        <div style="margin-top:32px;">
+          <h3 style="margin-bottom:8px;color:#ff7c3f;">Order Stats</h3>
+          <div class="stats" id="order-stats-row">
+            <div class="stat-card">
+              <h3>Total Orders</h3>
+              <p id="order-total-count">0</p>
+            </div>
+            <div class="stats" id="order-status-stats" style="flex-wrap:wrap;"></div>
           </div>
-          <div class="stat-card">
-            <h3>Unavailable</h3>
-            <p id="unavailable-count">0</p>
-          </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div style="margin-top:32px;">
+          <h3 style="margin-bottom:8px;">Recent Orders</h3>
+          <table style="width:100%;background:#fff8e1;border-radius:8px;">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Placed At</th>
+              </tr>
+            </thead>
+            <tbody id="recent-orders-tbody"></tbody>
+          </table>
         </div>
       </section>
 
@@ -98,6 +133,25 @@
           </div>
         </form>
         <div id="restaurant-map" class="map"></div>
+      </section>
+
+      <!-- Order Management Section -->
+      <section id="orders-section" class="card" style="display:none;">
+        <h2>Order Management</h2>
+        <div id="order-alert" style="color:#e74c3c;font-weight:bold;"></div>
+        <table id="orders-table" style="width:100%;margin-top:18px;">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Status</th>
+              <th>Placed At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </section>
     </main>
   </div>

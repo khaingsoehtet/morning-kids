@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order & Track - Morning Kids</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .order-section {
+      max-width: 400px;
+      margin: 40px auto;
+      background: #fff8e1;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      padding: 32px 24px;
+    }
+    .order-section h2 {
+      color: #ff7c3f;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .order-section form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .order-section input[type="text"], .order-section input[type="number"] {
+      padding: 10px;
+      border: 1px solid #ffd180;
+      border-radius: 7px;
+      font-size: 1rem;
+      background: #fff;
+    }
+    .order-section button {
+      padding: 12px;
+      background: #ff7c3f;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .order-section button:hover {
+      background: #ff9800;
+    }
+    .order-section .result, .order-section .error {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 1rem;
+    }
+    .order-section .result {
+      color: #2e7d32;
+    }
+    .order-section .error {
+      color: #e74c3c;
+    }
+    .order-section ul {
+      text-align: left;
+      margin: 10px 0 0 0;
+      padding-left: 18px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Morning Kids</h1>
+    <p class="tagline">Order & Track Your Meal</p>
+    <nav>
+      <a href="index.html" style="color:#ff7c3f;font-weight:bold;">&larr; Back to Home</a>
+    </nav>
+  </header>
+
+  <section class="order-section">
+    <h2>Place a New Order</h2>
+    <form id="order-form" autocomplete="off">
+      <input type="text" id="order-name" placeholder="Your Name" required>
+      <input type="text" id="order-phone" placeholder="Phone Number" required>
+      <button type="submit">Place Order</button>
+    </form>
+    <div id="order-result" class="result"></div>
+    <div id="order-error" class="error"></div>
+  </section>
+
+  <section class="order-section">
+    <h2>Track Your Order</h2>
+    <form id="track-form" autocomplete="off">
+      <input type="number" id="track-id" placeholder="Order ID" required>
+      <button type="submit">Check Status</button>
+    </form>
+    <div id="track-result" class="result"></div>
+    <div id="track-error" class="error"></div>
+  </section>
+
+  <!-- Add Edit Order section below Track Order -->
+  <section class="order-section" id="edit-order-section" style="display:none;">
+    <h2>Edit Your Order</h2>
+    <form id="edit-order-form">
+      <input type="hidden" id="edit-order-id">
+      <input type="text" id="edit-order-name" placeholder="Your Name" required>
+      <input type="text" id="edit-order-phone" placeholder="Phone Number" required>
+      <button type="submit">Save Changes</button>
+    </form>
+    <div id="edit-order-result" class="result"></div>
+    <div id="edit-order-error" class="error"></div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Morning Kids. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Place Order
+    document.getElementById('order-form').onsubmit = function(e) {
+      e.preventDefault();
+      const name = document.getElementById('order-name').value.trim();
+      const phone = document.getElementById('order-phone').value.trim();
+      const resultDiv = document.getElementById('order-result');
+      const errorDiv = document.getElementById('order-error');
+      resultDiv.textContent = '';
+      errorDiv.textContent = '';
+      fetch('save_order.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({customer_name: name, customer_phone: phone})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          resultDiv.textContent = 'Order placed! Your Order ID: ' + data.order_id;
+        } else {
+          errorDiv.textContent = data.error || 'Could not place order.';
+        }
+      })
+      .catch(() => {
+        errorDiv.textContent = 'Network error. Please try again.';
+      });
+    };
+
+    // Track Order
+    document.getElementById('track-form').onsubmit = function(e) {
+      e.preventDefault();
+      const orderId = document.getElementById('track-id').value.trim();
+      const resultDiv = document.getElementById('track-result');
+      const errorDiv = document.getElementById('track-error');
+      resultDiv.textContent = '';
+      errorDiv.textContent = '';
+      fetch('get_order_status.php?order_id=' + encodeURIComponent(orderId))
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.history && data.history.length) {
+            const latestStatus = data.history[data.history.length - 1].status;
+            resultDiv.innerHTML = '<b>Status History:</b><ul>' +
+              data.history.map(h => `<li>${h.status} (${h.changed_at})</li>`).join('') +
+              '</ul>';
+            // Allow editing if not shipped or beyond
+            if (['ORDER_PLACED', 'PAYMENT_CONFIRMED', 'PROCESSING'].includes(latestStatus)) {
+              showEditOrderForm(orderId);
+            } else {
+              document.getElementById('edit-order-section').style.display = 'none';
+            }
+          } else {
+            errorDiv.textContent = 'Order not found or no status history.';
+            document.getElementById('edit-order-section').style.display = 'none';
+          }
+        })
+        .catch(() => {
+          errorDiv.textContent = 'Network error. Please try again.';
+          document.getElementById('edit-order-section').style.display = 'none';
+        });
+    };
+
+    function showEditOrderForm(orderId) {
+      // Fetch order details (implement get_order.php)
+      fetch('get_order.php?order_id=' + encodeURIComponent(orderId))
+        .then(res => res.json())
+        .then(order => {
+          if (order.success) {
+            document.getElementById('edit-order-id').value = order.id;
+            document.getElementById('edit-order-name').value = order.customer_name;
+            document.getElementById('edit-order-phone').value = order.customer_phone;
+            document.getElementById('edit-order-section').style.display = 'block';
+          }
+        });
+    }
+
+    document.getElementById('edit-order-form').onsubmit = function(e) {
+      e.preventDefault();
+      const orderId = document.getElementById('edit-order-id').value;
+      const name = document.getElementById('edit-order-name').value.trim();
+      const phone = document.getElementById('edit-order-phone').value.trim();
+      fetch('edit_order.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({order_id: orderId, customer_name: name, customer_phone: phone})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('edit-order-result').textContent = 'Order updated!';
+        } else {
+          document.getElementById('edit-order-error').textContent = data.error || 'Could not update order.';
+        }
+      });
+    };
+  </script>
+</body>
+</html>

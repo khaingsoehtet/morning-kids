@@ -405,3 +405,9 @@ body {
 #upload-btn:hover {
   background: #ff9800;
 }
+
+/* Add to style.css if you want a visual divider */
+.dashboard .divider {
+  border-top: 2px solid #ffe0b2;
+  margin: 32px 0;
+}

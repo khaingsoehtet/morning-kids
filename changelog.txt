@@ -1,0 +1,17 @@
+## Changelog
+
+### Phase 2.1 (2025-04-25)
+- Added order management section for admins.
+- Dashboard now separates menu item stats and order stats.
+- Users can edit orders before shipping.
+- Improved UI for clarity and navigation.
+
+###What's Complete
+- Order Management:
+    Admin can view, update, and track orders in a dedicated section.
+    Recent orders and order status stats are shown in the dashboard.
+    Users can place and track orders from order.html.
+    Users can edit their order before it is shipped.
+- Dashboard Overview:
+    Menu item stats and order stats are visually separated for clarity.
+    Recent orders table is shown below order stats.

@@ -3,12 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function showAdminUI(loggedIn) {
     document.getElementById('logout-section').style.display = loggedIn ? 'block' : 'none';
     document.getElementById('toast').style.display = loggedIn ? 'block' : 'none';
-    // Do not touch dashboard-section, items-section, restaurant-admin here!
     if (loggedIn) {
       loadRestaurants();
       showRestaurantMap(13.7563, 100.5018);
       setActiveSection('dashboard-section');
       setActiveNav(document.getElementById('nav-dashboard'));
+      loadOrderStats();
     }
   }
 
@@ -365,12 +365,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadItems();
 
+  // --- Order Stats for Dashboard ---
+  function loadOrderStats() {
+    fetch('get_order_stats.php')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) return;
+        // Total orders
+        document.getElementById('order-total-count').textContent = data.total_orders;
+
+        // Status counts
+        const statusStats = document.getElementById('order-status-stats');
+        statusStats.innerHTML = '';
+        Object.entries(data.status_counts).forEach(([status, count]) => {
+          const div = document.createElement('div');
+          div.className = 'stat-card';
+          div.innerHTML = `<h3>${status.replace(/_/g,' ')}</h3><p>${count}</p>`;
+          statusStats.appendChild(div);
+        });
+
+        // Recent orders table
+        const tbody = document.getElementById('recent-orders-tbody');
+        tbody.innerHTML = '';
+        data.recent_orders.forEach(order => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${order.id}</td>
+            <td>${order.customer_name}</td>
+            <td>${order.customer_phone}</td>
+            <td>${order.status.replace(/_/g,' ')}</td>
+            <td>${order.created_at}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+  }
+
   // Sidebar navigation logic
   document.getElementById('nav-dashboard').onclick = function(e) {
     e.preventDefault();
     setActiveSection('dashboard-section');
     setActiveNav(this);
     clearMenuForm();
+    loadOrderStats();
   };
   document.getElementById('nav-items').onclick = function(e) {
     e.preventDefault();
@@ -384,11 +421,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setActiveNav(this);
     clearMenuForm();
   };
+  document.getElementById('nav-orders').onclick = function(e) {
+    e.preventDefault();
+    setActiveSection('orders-section');
+    setActiveNav(this);
+    loadOrders();
+  };
 
   function setActiveSection(sectionId) {
     document.getElementById('dashboard-section').style.display = 'none';
     document.getElementById('items-section').style.display = 'none';
     document.getElementById('restaurant-admin').style.display = 'none';
+    document.getElementById('orders-section').style.display = 'none';
     document.getElementById(sectionId).style.display = 'block';
   }
   function setActiveNav(activeLink) {
@@ -399,4 +443,74 @@ document.addEventListener('DOMContentLoaded', () => {
   // Show dashboard by default
   setActiveSection('dashboard-section');
   setActiveNav(document.getElementById('nav-dashboard'));
+  loadOrderStats();
+
+  // --- Order Management ---
+  function loadOrders() {
+    fetch('get_orders.php')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.querySelector('#orders-table tbody');
+        tbody.innerHTML = '';
+        data.orders.forEach(order => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${order.id}</td>
+            <td>${order.customer_name}</td>
+            <td>${order.customer_phone}</td>
+            <td>
+              <select onchange="changeOrderStatus(${order.id}, this.value)">
+                ${['ORDER_PLACED','PAYMENT_CONFIRMED','PROCESSING','SHIPPED','OUT_FOR_DELIVERY','DELIVERED','CANCELLED','RETURNED'].map(
+                  s => `<option value="${s}"${order.status===s?' selected':''}>${s.replace(/_/g,' ')}</option>`
+                ).join('')}
+              </select>
+            </td>
+            <td>${order.created_at}</td>
+            <td>
+              <button onclick="viewOrderHistory(${order.id})">History</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+  }
+
+  window.changeOrderStatus = function(orderId, newStatus) {
+    fetch('update_order_status.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({order_id: orderId, status: newStatus})
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) loadOrders();
+      else alert(data.error || 'Failed to update status');
+    });
+  };
+
+  window.viewOrderHistory = function(orderId) {
+    fetch('get_order_status.php?order_id=' + orderId)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.history) {
+          alert('Status History:\n' + data.history.map(h => `${h.status} (${h.changed_at})`).join('\n'));
+        }
+      });
+  };
+
+  // Notification for new orders (polling example)
+  let lastOrderId = 0;
+  function pollNewOrders() {
+    fetch('get_orders.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.orders.length && data.orders[0].id > lastOrderId) {
+          document.getElementById('order-alert').textContent = 'New order received!';
+          lastOrderId = data.orders[0].id;
+          setTimeout(() => document.getElementById('order-alert').textContent = '', 5000);
+        }
+        setTimeout(pollNewOrders, 10000); // Poll every 10 seconds
+      });
+  }
+  pollNewOrders();
 });
