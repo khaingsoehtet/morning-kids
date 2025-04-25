@@ -181,3 +181,227 @@ body {
     justify-content: center; /* Center the buttons horizontally */
     margin-top: 10px;
 }
+
+/* Card and form-row for admin/restaurant sections */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 32px 24px;
+  margin: 32px auto;
+  max-width: 700px;
+}
+.restaurant-form .form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.restaurant-form input {
+  flex: 1;
+}
+#restaurant-map.map {
+  height: 250px;
+  border-radius: 10px;
+  margin-top: 20px;
+  border: 1px solid #eee;
+}
+#restaurant-list {
+  margin-bottom: 18px;
+}
+#restaurant-list > div {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#restaurant-list button {
+  margin-left: 8px;
+}
+
+/* Admin Layout */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+.admin-sidebar {
+  width: 220px;
+  background: #fff8e1;
+  border-right: 1px solid #eee;
+  padding: 32px 0 0 0;
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+}
+.admin-sidebar h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #ff7c3f;
+  font-size: 1.3rem;
+}
+.admin-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.admin-sidebar li {
+  margin: 0;
+  padding: 0;
+}
+.admin-sidebar a,
+.admin-sidebar button.logout-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 24px;
+  color: #333;
+  text-decoration: none;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.admin-sidebar a.active,
+.admin-sidebar a:hover,
+.admin-sidebar button.logout-btn:hover {
+  background: #ffe0b2;
+  color: #ff7c3f;
+}
+.admin-main {
+  flex: 1;
+  padding: 32px 24px;
+  background: #fef9f4;
+  min-height: 100vh;
+}
+@media (max-width: 900px) {
+  .admin-layout { flex-direction: column; }
+  .admin-sidebar { width: 100%; min-height: unset; border-right: none; border-bottom: 1px solid #eee; }
+  .admin-main { padding: 16px 4vw; }
+}
+
+/* Compact form for items */
+.compact-form .form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.compact-form input,
+.compact-form textarea {
+  flex: 1;
+  min-width: 0;
+}
+.compact-form textarea {
+  min-height: 38px;
+  resize: vertical;
+}
+.compact-form img {
+  margin-left: 8px;
+}
+
+/* Item list grid */
+.item-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+.item-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 18px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+}
+.item-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.item-card .details {
+  flex: 1;
+}
+.item-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.1rem;
+}
+.item-card p {
+  margin: 2px 0;
+  font-size: 0.95rem;
+}
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.button-group button {
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: none;
+  background: #ffe0b2;
+  color: #333;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.15s;
+}
+.button-group button:hover {
+  background: #ffb74d;
+}
+
+/* Modern location grid for client */
+.location-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+.location-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #fff8e1;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 18px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, background 0.15s;
+}
+.location-card:hover {
+  background: #ffe0b2;
+  box-shadow: 0 4px 16px rgba(255, 124, 63, 0.10);
+}
+.location-icon {
+  font-size: 2rem;
+  margin-right: 8px;
+  color: #ff7c3f;
+}
+.location-card h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  color: #ff7c3f;
+}
+.location-card p {
+  margin: 0;
+  font-size: 0.97rem;
+  color: #555;
+}
+#upload-btn {
+  min-width: 140px;
+  font-size: 1rem;
+  padding: 10px 18px;
+  background: #ff7c3f;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+#upload-btn:hover {
+  background: #ff9800;
+}

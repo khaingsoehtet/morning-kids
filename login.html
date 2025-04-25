@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login - Morning Kids</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: #fff8e1;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      padding: 40px 32px 32px 32px;
+      max-width: 350px;
+      width: 100%;
+      margin: 40px auto;
+      text-align: center;
+    }
+    .login-card h1 {
+      color: #ff7c3f;
+      margin-bottom: 18px;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+    .login-card input[type="text"],
+    .login-card input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ffd180;
+      border-radius: 7px;
+      font-size: 1rem;
+      background: #fff8e1;
+      transition: border 0.2s;
+    }
+    .login-card input:focus {
+      border-color: #ffb74d;
+      outline: none;
+    }
+    .login-card button {
+      width: 100%;
+      padding: 12px;
+      background: #ff7c3f;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-top: 12px;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .login-card button:hover {
+      background: #ff9800;
+    }
+    .login-card .error {
+      color: #e74c3c;
+      margin-top: 12px;
+      font-size: 1rem;
+      min-height: 1.2em;
+    }
+    @media (max-width: 500px) {
+      .login-card { padding: 24px 8vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h1>Admin Login</h1>
+    <form id="login-form" autocomplete="off">
+      <input type="text" id="login-username" placeholder="Username" autocomplete="off" required>
+      <input type="password" id="login-password" placeholder="Password" autocomplete="off" required>
+      <button type="submit" id="login-btn">Login</button>
+      <div class="error" id="login-error"></div>
+    </form>
+  </div>
+  <script src="login.js"></script>
+</body>
+</html>

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Morning Kids - Hygienic Food for Kids</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
   <header>
@@ -30,6 +31,12 @@
     <div id="menu-container" class="menu-container"></div>
   </section>
 
+  <section id="restaurant-public-info" class="card">
+  <h2 style="text-align:center;color:#ff7c3f;">Our Locations</h2>
+  <div class="location-grid" id="public-restaurant-list"></div>
+  <div id="public-restaurant-map" class="map" style="margin-top:24px;"></div>
+</section>
+
   <section id="contact" class="contact">
     <h2>Contact Us</h2>
     <p>Email: hello@morningkids.local</p>
@@ -40,7 +47,9 @@
     <p>&copy; 2025 Morning Kids. All rights reserved.</p>
   </footer>
 
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
+  // Menu items (unchanged)
   fetch('get_all.php')
     .then(res => {
       if (!res.ok) throw new Error('Failed to fetch menu items.');
@@ -58,7 +67,7 @@
             <img src="images/${item.image}" alt="${item.name}" />
             <div class="details">
               <h3>${item.name}</h3>
-              <p><strong>Age Group:</strong> ${item.age}</p>
+              <p><strong>Age Group:</strong> ${item.age_group}</p>
               <p>${item.description}</p>
               <p><strong>Ingredients:</strong> ${item.ingredients}</p>
               <p><strong>Price:</strong> $${item.price}</p>
@@ -72,6 +81,39 @@
       const container = document.getElementById('menu-container');
       container.innerHTML = '<p>Failed to load menu items. Please try again later.</p>';
     });
-</script>
+
+  // Modernized restaurant locations
+  let publicMap, publicMarker;
+  fetch('get_restaurants.php')
+    .then(res => res.json())
+    .then(restaurants => {
+      const list = document.getElementById('public-restaurant-list');
+      list.innerHTML = restaurants.map((r, idx) => `
+        <div class="location-card" onclick="showMap(${r.lat},${r.lng})" tabindex="0" aria-label="Show ${r.name} on map">
+          <div class="location-icon">📍</div>
+          <div>
+            <h3>${r.name}</h3>
+            <p>${r.address}</p>
+          </div>
+        </div>
+      `).join('');
+      if (restaurants.length) showMap(restaurants[0].lat, restaurants[0].lng);
+    });
+
+  window.showMap = function(lat, lng) {
+    lat = parseFloat(lat) || 13.7563;
+    lng = parseFloat(lng) || 100.5018;
+    if (!publicMap) {
+      publicMap = L.map('public-restaurant-map').setView([lat, lng], 16);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(publicMap);
+      publicMarker = L.marker([lat, lng]).addTo(publicMap);
+    } else {
+      publicMap.setView([lat, lng]);
+      publicMarker.setLatLng([lat, lng]);
+    }
+  }
+  </script>
 </body>
 </html>
